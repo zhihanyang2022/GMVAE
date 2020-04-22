@@ -245,6 +245,10 @@ class GMVAE:
     optimizer = optim.Adam(self.network.parameters(), lr=self.learning_rate)
     train_history_acc, val_history_acc = [], []
     train_history_nmi, val_history_nmi = [], []
+    
+    train_history_rec = []
+    valid_history_rec = []
+    valid_history_gau = []
 
     for epoch in range(1, self.num_epochs + 1):
       train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = self.train_epoch(optimizer, train_loader)
@@ -269,12 +273,22 @@ class GMVAE:
         if self.verbose == 1:
           print("Gumbel Temperature: %.3lf" % self.gumbel_temp)
 
-      train_history_acc.append(train_acc)
-      val_history_acc.append(val_acc)
-      train_history_nmi.append(train_nmi)
-      val_history_nmi.append(val_nmi)
-    return {'train_history_nmi' : train_history_nmi, 'val_history_nmi': val_history_nmi,
-            'train_history_acc': train_history_acc, 'val_history_acc': val_history_acc}
+#       train_history_acc.append(train_acc)
+#       val_history_acc.append(val_acc)
+#       train_history_nmi.append(train_nmi)
+#       val_history_nmi.append(val_nmi)
+
+      train_history_rec.append(train_rec)
+      valid_history_rec.append(val_rec)
+      valid_history_gau.append(val_gauss)
+        
+    # return {'train_history_nmi' : train_history_nmi, 'val_history_nmi': val_history_nmi,
+    #        'train_history_acc': train_history_acc, 'val_history_acc': val_history_acc}
+    return {
+        'train_history_rec' : train_history_rec,
+        'valid_history_rec' : valid_history_rec,
+        'valid_history_gau' : valid_history_gau
+    }
   
 
   def latent_features(self, data_loader, return_labels=False, return_learned_labels=False):
