@@ -1,0 +1,1 @@
+{"GM-VAE, 1 component, 10000 epochs":0.0751392299,"GM-VAE, 28 components, 10000 epochs":0.1302835499,"GM-VAE, 8 components, 10000 epochs":0.2250885405,"Training data":0.0,"VAE, 2 * KLD loss \/ 64, 10000 epochs":1.6343990726,"VAE, 2 * KLD loss, 10000 epochs":0.1493701692,"VAE, Gaussian loss, 10000 epochs":0.0662122095,"VAE, KLD loss \/ 64, 10000 epochs":1.3327400991}

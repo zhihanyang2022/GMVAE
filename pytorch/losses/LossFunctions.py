@@ -53,6 +53,15 @@ class LossFunctions:
         raise "invalid loss function... try bce or mse..."
       return loss.sum(-1).mean()
 
+    def kl_divergence(self, mu, var):
+        """KL-divergence with a unit Gaussian"""
+        # KLD = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
+        return -0.5 * torch.mean(1 + torch.log(var) - mu.pow(2) - var)
+    
+    def kl_divergence_v2(self, mu, var):
+        """KL-divergence with a unit Gaussian"""
+        # KLD = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
+        return torch.mean(-0.5 * torch.sum(1 + torch.log(var) - mu.pow(2) - var, dim=-1))
 
     def log_normal(self, x, mu, var):
       """Logarithm of normal distribution with mean=mu and variance=var
@@ -88,6 +97,24 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
+    
+      """ 
+      ====
+      NOTE
+      
+      TITLE: Interpretation of the Gaussian loss
+      DATE: April 24, 2020
+      AUTHOR: Zhihan
+      
+      It seems like from the equation below that, in order to minimize this loss, the latent
+      vector should be as close to the center of the Gaussians as possible. For the VAE loss 
+      function which involves KL-divergence, the means and variances for each latent vector
+      are moved towards a unit Gaussian, but the individual latent vectors are never directly
+      moved towards the center of the unit Gaussian. Therefore, I can see why this Gaussian
+      loss might have a stronger clustering effect.
+      ====
+      """
+    
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
       return loss.mean()
 
