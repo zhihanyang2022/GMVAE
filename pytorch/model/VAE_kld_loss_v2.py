@@ -225,7 +225,7 @@ class VAE:
     }
   
 
-  def latent_features(self, data_loader, return_labels=False, return_learned_labels=False):
+  def latent_features(self, data_loader):
     """Obtain latent features learnt by the model
 
     Args:
@@ -236,42 +236,28 @@ class VAE:
        features: (array) array containing the features from the data
     """
     self.network.eval()
+   
     N = len(data_loader.dataset)
+    
     features = np.zeros((N, self.gaussian_size))
-    if return_labels:
-      true_labels = np.zeros(N, dtype=np.int64)
+
     start_ind = 0
-    learned_labels = []
+    
     with torch.no_grad():
-      for (data, labels) in data_loader:
+      for (data, ) in data_loader:
+
         if self.cuda == 1:
           data = data.cuda()
-        # flatten data
+
         data = data.view(data.size(0), -1)  
-        out = self.network.inference(data, self.gumbel_temp, self.hard_gumbel)
+        
+        out = self.network(data)
         latent_feat = out['mean']
+        
         end_ind = min(start_ind + data.size(0), N+1)
+        features[start_ind:end_ind] = latent_feat.cpu().numpy()
 
-        # return true labels
-        if return_labels:
-          true_labels[start_ind:end_ind] = labels.cpu().numpy()
-        
-        # added by Zhihan
-        # =====
-        if return_learned_labels:
-            learned_labels.append(out['categorical'].cpu().numpy())
-        # =====
-        
-        features[start_ind:end_ind] = latent_feat.cpu().detach().numpy()  
         start_ind += data.size(0)
-    if return_labels:
-      return features, true_labels
-
-    # added by Zhihan
-    # =====
-    if return_learned_labels:
-        return features, np.concatenate(learned_labels).argmax(axis=1)
-    # =====
     
     return features
 
