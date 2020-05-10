@@ -94,12 +94,15 @@ class GenerativeNet(nn.Module):
 # VAE Network
 class VAENet(nn.Module):
   
-  def __init__(self, x_dim, z_dim):
+  def __init__(self, x_dim, z_dim, y_dim=None):
+        
+    if y_dim is None:
+        y_dim = x_dim
     
     super().__init__()
 
     self.inference = InferenceNet(x_dim, z_dim)
-    self.generative = GenerativeNet(x_dim, z_dim)
+    self.generative = GenerativeNet(y_dim, z_dim)
 
     # weight initialization
     for m in self.modules():
