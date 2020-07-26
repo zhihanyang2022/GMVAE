@@ -57,8 +57,9 @@ class VAE:
 
     self.gaussian_size = args.gaussian_size
     self.input_size = args.input_size
+    self.output_size = args.output_size
 
-    self.network = VAENet(self.input_size, self.gaussian_size)
+    self.network = VAENet(self.input_size, self.gaussian_size, self.output_size)
     self.losses = LossFunctions()
     self.metrics = Metrics()
 
@@ -157,7 +158,7 @@ class VAE:
     num_batches = 0.
 
     with torch.no_grad():
-      for (data, ) in data_loader:
+      for path, chunk in data_loader:
         
         if self.cuda == 1:
             path = path.cuda()
@@ -211,7 +212,7 @@ class VAE:
       train_total_loss, train_recon_loss, train_gauss_loss = self.train_epoch(optimizer, train_loader)
       valid_total_loss, valid_recon_loss, valid_gauss_loss = self.test(val_loader)
 
-      print(f"Epoch {epoch:5} / {self.num_epochs} | Total loss: {round(train_total_loss, 2):7} | Recon loss: {round(train_recon_loss, 2):7} | Gauss loss: {round(train_gauss_loss, 2):7}")
+      print(f"Epoch {epoch:5} / {self.num_epochs} | Total loss: {round(valid_total_loss, 2):7} | Recon loss: {round(valid_recon_loss, 2):7} | Gauss loss: {round(valid_gauss_loss, 2):7}")
 
       train_total_losses.append(train_total_loss)
       train_recon_losses.append(train_recon_loss)
